@@ -13,12 +13,14 @@ class Nintendo64():
 	def __init__(self):
 		self.core = Core();
 		self.allocate_buffer()
+		# warning: this is not reliable! you have to manually set frame_ready to false!
+		self.frame_ready = False
 	
 	def startup(self):
 		self.core.core_load(dll_path)
 		self.core.core_startup(dll_path, False)
 		self.startup_plugins()		
-		#self.register_frame_reader()
+		self.register_frame_reader()
 
 	def shutdown(self):
 		#detach plugins
@@ -31,8 +33,7 @@ class Nintendo64():
 		self.attach_plugins()
 		self.thread = Thread(target=self.core.execute)
 		self.thread.start()
-		# how to detect when emu is ready for pause command?
-		time.sleep(5)
+		self.wait_for_frame_ready()
 		self.pause()
 
 	def set_input_state(self, input_state):
@@ -61,15 +62,18 @@ class Nintendo64():
 
 	def step(self, num_frames=1):
 		for i in range(0, num_frames):
-			self.core.send_sdl_keydown(sdl2.SDLK_UP)
+			self.frame_ready = False
 			self.core.advance_frame()
-			# it seems you have to wait until the frame is ready?
-			#time.sleep(0.1)
+			self.wait_for_frame_ready()
 
 	def load_state(self, state_path):
 		self.core.state_load(state_path)	
 
 	# internal usage only
+	def wait_for_frame_ready(self):
+		while (not self.frame_ready):
+			pass
+
 	def allocate_buffer(self):
 		self.buffer = Framebuffer()
 		buf_adr = C.addressof(self.buffer)
@@ -80,7 +84,8 @@ class Nintendo64():
 		self.core.m64p.CoreDoCommand(M64CMD_SET_FRAME_CALLBACK, C.c_int(0), self.callback)
 
 	def read_screen_to_buffer(self, frame_index):
-		self.core.m64p.CoreDoCommand(M64CMD_READ_SCREEN, C.c_int(0), self.buf_ptr)		
+		self.core.m64p.CoreDoCommand(M64CMD_READ_SCREEN, C.c_int(0), self.buf_ptr)	
+		self.frame_ready = True	
 
 	def startup_plugins(self):
 		self.core.plugin_load_try(video_plugin_path)
@@ -116,8 +121,8 @@ class Nintendo64():
 
 n64 = Nintendo64()
 n64.startup()
-#n64.run_game(r"k:\temp\mario64.z64")
-n64.run_game(r"Mario Kart 64 (E) (V1.1) [!].z64")
+#n64.run_game(r"Mario Kart 64 (E) (V1.1) [!].z64")
+n64.run_game(r"mario64.z64")
 
 def press(key, t=0.1):
 	n64.key_down(key)
