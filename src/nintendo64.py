@@ -117,7 +117,7 @@ class Nintendo64():
 n64 = Nintendo64()
 n64.startup()
 #n64.run_game(r"k:\temp\mario64.z64")
-n64.run_game(r"k:\temp\Mario Kart 64 (E) (V1.1) [!].z64")
+n64.run_game(r"Mario Kart 64 (E) (V1.1) [!].z64")
 
 def press(key, t=0.1):
 	n64.key_down(key)
