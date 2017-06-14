@@ -5,6 +5,7 @@ from threading import Thread
 import numpy as np
 import time
 from PIL import Image
+import helpers
 from defs import *
 from plugin_paths import *
 
@@ -23,15 +24,19 @@ class Nintendo64():
 		self.register_frame_reader()
 
 	def shutdown(self):
-		#detach plugins
+		#TODO: detach plugins
+		#self.core.detach_plugins()
+		time.sleep(0.5)
 		self.core.stop()
+		time.sleep(0.5)
 		self.core.rom_close()
+		time.sleep(0.5)
 		self.core.core_shutdown()
 
 	def run_game(self, rom_path):
 		self.load_rom(rom_path)
 		self.attach_plugins()
-		self.thread = Thread(target=self.core.execute)
+		self.thread = Thread(target=self.core.execute, daemon=True)
 		self.thread.start()
 		self.wait_for_frame_ready()
 		self.pause()
@@ -49,10 +54,22 @@ class Nintendo64():
 	def key_up(self, key):
 		self.core.send_sdl_keyup(key)
 
+	# get useful stuff out of the emulator
 	def get_frame(self):
 		img = Image.frombytes('RGB', (200, 150), self.buffer, "raw")
 		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_YUV))
 		return luminance
+
+	# this is mario kart specific and *should* in principle be somewhere else
+	def get_lap_progress(self):
+		progress_bits = self.core.m64p.DebugMemRead32(0x801644A8)
+		return helpers.int_bits_to_float(progress_bits)
+
+	def get_position(self):
+		# this seems fishy, why does it return correct things?
+		position = self.core.m64p.DebugMemRead32(0x801643B8)
+		return position + 1
+	# end mario kart specific
 
 	def pause(self):
 		self.core.pause()
@@ -121,8 +138,9 @@ class Nintendo64():
 
 n64 = Nintendo64()
 n64.startup()
-#n64.run_game(r"Mario Kart 64 (E) (V1.1) [!].z64")
-n64.run_game(r"mario64.z64")
+n64.run_game(r"Mario Kart 64 (U) [!].z64")
+
+
 
 def press(key, t=0.1):
 	n64.key_down(key)

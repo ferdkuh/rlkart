@@ -35,7 +35,7 @@ BUTTON_B		= SDL_KEY_LCTRL
 BUTTON_START	= SDL_KEY_ENTER
 
 # input vector layout, values should be 0 or 1
-INPUT_MAPPING = [ANALOG_LEFT, ANALOG_RIGHT, ANALOG_UP, ANALOG_DOWN, BUTTON_A, BUTTON_B]
+INPUT_MAPPING = [ANALOG_LEFT, ANALOG_RIGHT, BUTTON_A, BUTTON_B]
 
 # types for interaction via ctypes
 Framebuffer = C.c_ubyte*(200*150*3)
