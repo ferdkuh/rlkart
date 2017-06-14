@@ -1,0 +1,45 @@
+
+import ctypes as C
+import numpy as np
+
+# SDL 1.2 keycodes - damn them to hell!
+SDL_KEY_UP 		= 273
+SDL_KEY_DOWN 	= 274
+SDL_KEY_RIGHT	= 275
+SDL_KEY_LEFT	= 276
+SDL_KEY_ENTER	= 13
+SDL_KEY_LCTRL	= 306
+SDL_KEY_LSHIFT	= 304
+SDL_KEY_X		= 120
+SDL_KEY_C 		= 99
+SDL_KEY_Z		= 122
+SDL_KEY_W 		= 119
+SDL_KEY_A       = 97
+SDL_KEY_S       = 115
+SDL_KEY_D       = 100
+
+# key to button mapping
+ANALOG_LEFT 	= SDL_KEY_LEFT
+ANALOG_RIGHT	= SDL_KEY_RIGHT
+ANALOG_UP		= SDL_KEY_UP
+ANALOG_DOWN		= SDL_KEY_DOWN
+DPAD_LEFT		= SDL_KEY_A
+DPAD_RIGHT		= SDL_KEY_D
+DPAD_UP			= SDL_KEY_W
+DPAD_DOWN		= SDL_KEY_S
+TRIGGER_LEFT	= SDL_KEY_X
+TRIGGER_RIGHT	= SDL_KEY_C
+TRIGGER_Z		= SDL_KEY_Z
+BUTTON_A		= SDL_KEY_LSHIFT
+BUTTON_B		= SDL_KEY_LCTRL
+BUTTON_START	= SDL_KEY_ENTER
+
+# input vector layout, values should be 0 or 1
+INPUT_MAPPING = [ANALOG_LEFT, ANALOG_RIGHT, ANALOG_UP, ANALOG_DOWN, BUTTON_A, BUTTON_B]
+
+# types for interaction via ctypes
+Framebuffer = C.c_ubyte*(200*150*3)
+FRAME_CALLBACK_FUNC = C.CFUNCTYPE(None, C.c_uint)
+
+# random shit
+RGB_TO_YUV = np.array([0.299, 0.587, 0.144])
