@@ -42,4 +42,4 @@ Framebuffer = C.c_ubyte*(200*150*3)
 FRAME_CALLBACK_FUNC = C.CFUNCTYPE(None, C.c_uint)
 
 # random shit
-RGB_TO_YUV = np.array([0.299, 0.587, 0.144])
+RGB_TO_Y = np.array([0.299, 0.587, 0.144])

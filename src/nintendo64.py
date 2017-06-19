@@ -16,12 +16,13 @@ class Nintendo64():
 		self.allocate_buffer()
 		# warning: this is not reliable! you have to manually set frame_ready to false!
 		self.frame_ready = False
+		self.frame_callback = None
 	
 	def startup(self):
 		self.core.core_load(dll_path)
 		self.core.core_startup(dll_path, False)
 		self.startup_plugins()		
-		self.register_frame_reader()
+		self.register_frame_callback()
 
 	def shutdown(self):
 		#TODO: detach plugins
@@ -57,20 +58,17 @@ class Nintendo64():
 	# get useful stuff out of the emulator
 	def get_frame(self):
 		img = Image.frombytes('RGB', (200, 150), self.buffer, "raw")
-		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_YUV))
+		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_Y))
 		return luminance
+	
+	def read_memory_float32(self, address):
+		bits = self.core.m64p.DebugMemRead32(address)
+		return helpers.int_bits_to_float(bits)
 
-	# this is mario kart specific and *should* in principle be somewhere else
-	def get_lap_progress(self):
-		progress_bits = self.core.m64p.DebugMemRead32(0x801644A8)
-		return helpers.int_bits_to_float(progress_bits)
+	def read_memory_int32(self, address):
+		return self.core.m64p.DebugMemRead32(address)
 
-	def get_position(self):
-		# this seems fishy, why does it return correct things?
-		position = self.core.m64p.DebugMemRead32(0x801643B8)
-		return position + 1
-	# end mario kart specific
-
+	# control emulator
 	def pause(self):
 		self.core.pause()
 
@@ -96,12 +94,14 @@ class Nintendo64():
 		buf_adr = C.addressof(self.buffer)
 		self.buf_ptr = C.c_void_p(buf_adr)
 
-	def register_frame_reader(self):
+	def register_frame_callback(self):
 		self.callback = FRAME_CALLBACK_FUNC(self.read_screen_to_buffer)
 		self.core.m64p.CoreDoCommand(M64CMD_SET_FRAME_CALLBACK, C.c_int(0), self.callback)
 
 	def read_screen_to_buffer(self, frame_index):
-		self.core.m64p.CoreDoCommand(M64CMD_READ_SCREEN, C.c_int(0), self.buf_ptr)	
+		self.core.m64p.CoreDoCommand(M64CMD_READ_SCREEN, C.c_int(0), self.buf_ptr)
+		if (self.frame_callback):
+			self.frame_callback(frame_index)
 		self.frame_ready = True	
 
 	def startup_plugins(self):
@@ -139,10 +139,20 @@ class Nintendo64():
 n64 = Nintendo64()
 n64.startup()
 n64.run_game(r"Mario Kart 64 (U) [!].z64")
-
-
+n64.frame_callback = lambda x: print("position at frame {}: {}".format(x,get_position()))
 
 def press(key, t=0.1):
 	n64.key_down(key)
 	time.sleep(t)
 	n64.key_up(key)
+
+def get_lap_progress():
+	return n64.read_memory_float32(0x801644A8)
+	#progress_bits = self.core.m64p.DebugMemRead32(0x801644A8)
+	#return helpers.int_bits_to_float(progress_bits)
+
+def get_position():
+	# this seems fishy, why does it return correct things?
+	return n64.read_memory_int32(0x801643B8) + 1		
+	#position = self.core.m64p.DebugMemRead32(0x801643B8)
+	#return position + 1
