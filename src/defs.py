@@ -1,4 +1,3 @@
-
 import ctypes as C
 import numpy as np
 
@@ -34,8 +33,35 @@ BUTTON_A		= SDL_KEY_LSHIFT
 BUTTON_B		= SDL_KEY_LCTRL
 BUTTON_START	= SDL_KEY_ENTER
 
+ALL_KEYS = [ANALOG_LEFT, ANALOG_RIGHT, ANALOG_UP, ANALOG_DOWN,
+			DPAD_LEFT, DPAD_RIGHT, DPAD_UP, DPAD_DOWN,
+			TRIGGER_LEFT, TRIGGER_RIGHT, TRIGGER_Z,
+			BUTTON_A, BUTTON_B, BUTTON_START]
+
+# NO_OP			= 0
+# ANALOG_LEFT 	= 1
+# ANALOG_RIGHT 	= 1 << 2
+# ANALOG_UP 		= 1 << 3
+# ANALOG_DOWN 	= 1 << 4
+# DPAD_LEFT 		= 1 << 5
+# DPAD_RIGHT 		= 1 << 6
+# DPAD_UP 		= 1 << 7
+# DPAD_DOWN 		= 1 << 8
+# TRIGGER_LEFT 	= 1 << 9
+# TRIGGER_RIGHT   = 1 << 10
+# TRIGGER_Z       = 1 << 11
+# BUTTON_A 		= 1 << 12
+# BUTTON_B 		= 1 << 13
+# BUTTON_START 	= 1 << 14
+
+# ALL_BUTTONS = [ANALOG_LEFT, ANALOG_RIGHT, ANALOG_UP, ANALOG_DOWN,
+# 			   DPAD_LEFT, DPAD_RIGHT, DPAD_UP, DPAD_DOWN,
+# 			   TRIGGER_LEFT, TRIGGER_RIGHT, TRIGGER_Z,
+# 			   BUTTON_A, BUTTON_B, BUTTON_START]
+
 # input vector layout, values should be 0 or 1
-INPUT_MAPPING = [ANALOG_LEFT, ANALOG_RIGHT, BUTTON_A, BUTTON_B]
+# this is actually mario kart specific, other game obviously need more buttons
+# INPUT_MAPPING = [ANALOG_LEFT, ANALOG_RIGHT, BUTTON_A, BUTTON_B]
 
 # types for interaction via ctypes
 Framebuffer = C.c_ubyte*(200*150*3)

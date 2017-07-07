@@ -40,12 +40,23 @@ def debug_callback(context, level, message):
     elif level == M64MSG_VERBOSE and VERBOSE:
         sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
 
+#temp
+import threading
+is_paused = threading.Event()
+#end temp
+
 
 def state_callback(context, param, value):
     if param == M64CORE_VIDEO_SIZE:
         pass
     elif param == M64CORE_VIDEO_MODE:
         pass
+    elif param == M64CORE_EMU_STATE :
+        #print("emu state changed to {}".format(value))
+        if value == M64EMU_PAUSED:
+            is_paused.set()
+        else:
+            is_paused.clear()
 
 DEBUGFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_char_p)
 STATEFUNC = C.CFUNCTYPE(None, C.c_char_p, C.c_int, C.c_int)
