@@ -35,5 +35,5 @@ def arrange_window_win32(i, columns = 4, start_pos = (20, 20), spacing = 10):
 	win32gui.SetWindowText(hwnd, "E{}".format(i))
 	win32gui.MoveWindow(hwnd, nx, ny, w, h, True)
 
-def arrange_window_x11(i):
+def arrange_window_x11(i, columns = 4, start_pos = (20, 20), spacing = 10):
 	print("though luck. not implemented.")

@@ -9,7 +9,7 @@ if sys.platform == "win32":
 else:
 	from helpers import arrange_window_x11 as arrange_window
 
-ROM_PATH = r"Mario Kart 64 (U) [!].z64"
+ROM_PATH = r"../res/Mario Kart 64 (U) [!].z64"
 
 #special request
 def reward_func(env):

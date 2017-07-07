@@ -53,7 +53,7 @@ class MarioKartEnv():
 		self.magic = False
 
 		self.episode_step = 0
-		self.n64.core.state_load(r"luigi_raceway_mario.state")
+		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")
 
 	def apply_action(self, action_index, frame_skip=1):
 		input_list = MarioKartEnv.AVAILABLE_ACTIONS[action_index]
