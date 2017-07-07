@@ -63,29 +63,11 @@ class MarioKartEnv():
 		reward = self.reward_func(self)
 		return reward
 
-	def update_status_variables(self):
-		
-		self.lap = self.raw_lap()
-		self.position = self.raw_position()
-
-		# overall progress in the current lap
-		if not self.magic and self.raw_lap_progress() < 0.1:
-			self.magic = True
-
-		self.lap_progress = self.raw_lap_progress()
-		if self.magic and self.lap == 1 and self.raw_lap_progress() > 0.9:
-			self.lap_progress = 0.0
-
-		# progress made on the track since last update
-		self.progress_delta = self.lap_progress - self.last_lap_progress
-		self.last_lap_progress = self.lap_progress
-
-		# has the race started yet
-		if not self.race_started and self.raw_lap_progress() > 0.0:
-			self.race_started = True
-
-		# is the race finished
-		self.race_finished = False
+	def get_current_state(self):
+		img = self.n64.get_frame()
+		# scale down?
+		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_Y))
+		return luminance
 
 	# helper methods for reward generation
 	def raw_position(self):
@@ -109,8 +91,27 @@ class MarioKartEnv():
 			mp64core.is_paused.wait()			# this needs to be made less ugly
 			self.episode_step += 1		
 		
-	def get_current_state(self):
-		img = self.n64.get_frame()
-		# scale down?
-		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_Y))
-		return luminance
+	def update_status_variables(self):
+		
+		self.lap = self.raw_lap()
+		self.position = self.raw_position()
+
+		# overall progress in the current lap
+		if not self.magic and self.raw_lap_progress() < 0.1:
+			self.magic = True
+
+		self.lap_progress = self.raw_lap_progress()
+		if self.magic and self.lap == 1 and self.raw_lap_progress() > 0.9:
+			self.lap_progress = 0.0
+
+		# progress made on the track since last update
+		self.progress_delta = self.lap_progress - self.last_lap_progress
+		self.last_lap_progress = self.lap_progress
+
+		# has the race started yet
+		if not self.race_started and self.raw_lap_progress() > 0.0:
+			self.race_started = True
+
+		# is the race finished
+		self.race_finished = False
+	

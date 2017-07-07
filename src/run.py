@@ -20,6 +20,7 @@ def run_instance(i, lock):
 	env.start()
 	while True:
 		reward = env.apply_action(3, frame_skip=4)
+		state = env.get_current_state()
 		print("position: {}, progress: {}, delta: {}".format(env.position, env.lap_progress, env.progress_delta))
 
 if __name__ == "__main__":
