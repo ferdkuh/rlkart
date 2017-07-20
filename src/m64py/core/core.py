@@ -35,10 +35,10 @@ def debug_callback(context, level, message):
         sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
     elif level == M64MSG_WARNING:
         sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
-    elif level == M64MSG_INFO or level == M64MSG_STATUS:
-        sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
-    elif level == M64MSG_VERBOSE and VERBOSE:
-        sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
+    # elif level == M64MSG_INFO or level == M64MSG_STATUS:
+    #     sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
+    # elif level == M64MSG_VERBOSE and VERBOSE:
+    #     sys.stderr.write("%s: %s\n" % (context.decode(), message.decode()))
 
 #temp
 import threading

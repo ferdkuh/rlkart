@@ -1,18 +1,25 @@
 import sys
 import threading
 import helpers
+import platform
 
 from threading import Thread, Event
 from m64py.core.core import Core
 from m64py.core.defs import *
 from defs import *
-from plugin_paths import *
 from PIL import Image
 
 if sys.platform == "win32":
     from _ctypes import FreeLibrary as dlclose    
 else:
     from _ctypes import dlclose    
+
+if platform.architecture()[0] == "32bit":
+	print("using 32bit mupen64plus lib")
+	from plugin_paths_32 import *
+else:
+	print("using 64bit mupen64plus lib")
+	from plugin_paths import *
 
 class N64GameThread(Thread):
 

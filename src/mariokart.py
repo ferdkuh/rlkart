@@ -20,16 +20,19 @@ class MarioKartEnv():
 		[ANALOG_RIGHT, BUTTON_B]	#8
 	]
 
-	def __init__(self, rom_path, instance_id, lock, reward_func):
+	def __init__(self, rom_path, instance_id):
 		self.instance_id = instance_id
-		self.n64 = N64GameThread(rom_path, instance_id=instance_id)
-		self.lock = lock		
-		self.reward_func = reward_func
+		self.rom_path = rom_path
+		#self.n64 = N64GameThread(rom_path, instance_id=instance_id)
+		#self.lock = lock		
+		#self.reward_func = reward_func
 
 	def start(self):
-		#t.core.state_load(r"luigi_raceway_mario.state")		
+		#t.core.state_load(r"luigi_raceway_mario.state")
+		self.n64 = N64GameThread(self.rom_path, instance_id=self.instance_id)		
 		self.init()
-		self.lock.wait()
+		#print("init done")
+		#self.lock.wait()
 		self.new_episode()	
 
 	def init(self):
@@ -39,6 +42,7 @@ class MarioKartEnv():
 		while state != M64EMU_RUNNING:
 			time.sleep(0.1)		
 			state = self.n64.core.core_state_query(M64CORE_EMU_STATE)	
+		time.sleep(1)	# scary, without this wait nothing works
 		self.n64.core.pause()	
 
 	# user methods
@@ -46,26 +50,30 @@ class MarioKartEnv():
 		self.lap = 0
 		self.position = 8
 		self.lap_progress = 0.0
-		self.progress_delta = 0
+		self.progress_delta = 0.0
 		self.last_lap_progress = 0.0
 		self.race_started = False
 		self.race_finished = False
 		self.magic = False
-
 		self.episode_step = 0
-		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")
+		#self.n64.core.state_load(r"../res/mid_race.state")
+		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")		
+		#temp test
+		# self.n64.core.resume()
+		# self.n64.core.pause()
 
 	def apply_action(self, action_index, frame_skip=1):
 		input_list = MarioKartEnv.AVAILABLE_ACTIONS[action_index]
 		self.n64.set_input_state(input_list)
 		self.step(frame_skip)
 		self.update_status_variables()
-		reward = self.reward_func(self)
-		return reward
+		#reward = self.reward_func(self)
+		return 0.0
 
 	def get_current_state(self):
 		img = self.n64.get_frame()
 		# scale down?
+		img = img.resize((84, 84))
 		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_Y))
 		return luminance
 
@@ -105,8 +113,14 @@ class MarioKartEnv():
 			self.lap_progress = 0.0
 
 		# progress made on the track since last update
-		self.progress_delta = self.lap_progress - self.last_lap_progress
-		self.last_lap_progress = self.lap_progress
+		current_progress = self.raw_lap_progress()
+		if self.last_lap_progress > current_progress:
+			current_progress += 1.0
+
+		self.progress_delta = current_progress - self.last_lap_progress
+		self.last_lap_progress = current_progress
+		# self.progress_delta = self.lap_progress - self.last_lap_progress
+		# self.last_lap_progress = self.lap_progress
 
 		# has the race started yet
 		if not self.race_started and self.raw_lap_progress() > 0.0:
