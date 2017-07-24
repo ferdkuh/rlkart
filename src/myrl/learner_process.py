@@ -33,7 +33,9 @@ class LearnerProcess(mp.Process):
 				self.apply_next_action()
 				# write new state and reward to shared memory
 				new_state = self.environment.get_current_state()
-				reward = self.environment.progress_delta
+
+				reward = self.environment.progress_delta * 10.0
+
 				self.shared_memory.rewards[self.index] = reward
 				self.shared_memory.states[self.index] = new_state
 				# signal that updated state has been written to shared memory

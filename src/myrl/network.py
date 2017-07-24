@@ -44,7 +44,7 @@ class Network():
 		policy_logits = fully_connected(
 			inputs = self.fc,
 			num_outputs = num_actions,
-			#activation_fn=tf.nn.softmax,
+			activation_fn=None,
 			weights_initializer=normalized_columns_initializer(0.01), 
 			biases_initializer=None)
 
@@ -61,20 +61,39 @@ class Network():
 		# loss ops
 		self.action_indices = tf.placeholder(tf.uint8, [None], name='action_indices')		
 		self.returns = tf.placeholder(tf.float32, [None], name='discounted_returns')
-		self.values = tf.placeholder(tf.float32, [None], name='estimated_values')
-		
+		self.advantages = tf.placeholder(tf.float32, [None], name='advantages')
+		# self.values = tf.placeholder(tf.float32, [None], name='estimated_values')
+
+		# what is the reason everybody computes advantages in python?
+		# advantages = self.returns - self.values
+
 		actions_one_hot = tf.one_hot(self.action_indices, num_actions)
-		log_policy = tf.nn.log_softmax(policy_logits)
-		advantages = self.returns - self.values
 
-		responsible_outputs = tf.reduce_sum(log_policy * actions_one_hot, axis=1)
-		value_loss = 0.5 * tf.reduce_sum(tf.square(self.returns - self.values))
-		policy_entropy = -tf.reduce_sum(self.policy_out * log_policy)
-		policy_loss = -tf.reduce_sum(responsible_outputs * advantages)
-		loss = 0.5 * value_loss + policy_loss - policy_entropy * BETA
+		log_prob_tf = tf.nn.log_softmax(policy_logits)
+		prob_tf = self.policy_out
 
-		self.policy_loss = policy_loss
-		self.value_loss = value_loss
+		pi_loss = -tf.reduce_sum(tf.reduce_sum(log_prob_tf * actions_one_hot, [1]) * self.advantages)
+		vf_loss = 0.5 * tf.reduce_sum(tf.squared_difference(self.value_out, self.returns))
+		entropy = -tf.reduce_sum(prob_tf * log_prob_tf)
+		loss = pi_loss + 0.5 * vf_loss - entropy * 0.01
+
+		# log_policy = tf.nn.log_softmax(policy_logits)
+
+		# responsible_outputs = tf.reduce_sum(log_policy * actions_one_hot, axis=1)
+		# policy_loss = tf.reduce_sum(responsible_outputs * entropy)
+
+		# advantages = -tf.reduce_sum(self.policy_out * log_policy)
+		# entropy_sum = tf.reduce_sum(entropy)
+
+		# value_loss = tf.reduce_sum(tf.squared_difference(self.returns, self.values))
+
+		# value_loss = 0.5 * tf.reduce_sum(tf.square(self.returns - self.values))
+		# policy_entropy = -tf.reduce_sum(self.policy_out * log_policy)
+		# policy_loss = -tf.reduce_sum(responsible_outputs * advantages)
+		# loss = 0.5 * value_loss + policy_loss - policy_entropy * BETA
+
+		self.policy_loss = pi_loss
+		self.value_loss = vf_loss
 		self.loss = loss
 
 		# policy_s = tf.reduce_sum(log_policy * actions_one_hot, axis=1)	# compute value of policy vector for chosen action

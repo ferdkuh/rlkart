@@ -21,6 +21,9 @@ class LearnerProcessManager():
 		self.learners = [self.create_learner(i) for i in range(0, num_learners)]
 		#self.start_learners()
 
+	def stop_learners(self):
+		for q in self.queues: q.put("stop")
+
 	def start_learners(self):
 		for learner in self.learners:
 			learner.start()

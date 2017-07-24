@@ -114,11 +114,17 @@ class MarioKartEnv():
 
 		# progress made on the track since last update
 		current_progress = self.raw_lap_progress()
-		if self.last_lap_progress > current_progress:
-			current_progress += 1.0
-
-		self.progress_delta = current_progress - self.last_lap_progress
+		delta = current_progress - self.last_lap_progress 
+		if abs(delta) > 0.9: 
+			delta = max(0.0, delta - 1.0)
+		self.progress_delta = delta
 		self.last_lap_progress = current_progress
+		#god is this wrong
+		# if self.last_lap_progress > current_progress:
+		# 	current_progress += 1.0
+
+		# self.progress_delta = current_progress - self.last_lap_progress
+		# self.last_lap_progress = current_progress
 		# self.progress_delta = self.lap_progress - self.last_lap_progress
 		# self.last_lap_progress = self.lap_progress
 
