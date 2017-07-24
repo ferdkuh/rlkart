@@ -19,9 +19,9 @@ ROM_PATH = r"../res/Mario Kart 64 (U) [!].z64"
 def create_environment(index):
 	return MarioKartEnv(ROM_PATH, index)
 
-NUM_LEARNERS = 15
+NUM_LEARNERS = 6
 STATE_SHAPE = [84, 84]
-BATCH_SIZE = 20
+BATCH_SIZE = 1
 
 GAMMA = 0.99
 
@@ -67,6 +67,7 @@ if __name__ == "__main__":
 			# 	img = Image.fromarray(frame)
 			# 	filename = "learner_{}_step_{}.tiff".format(xx, i)
 			# 	img.save(filename)
+		print(i)
 
 		current_state = np.copy(manager.shared_memory.states)
 		for t in range(0, BATCH_SIZE):
@@ -116,7 +117,7 @@ if __name__ == "__main__":
 			print(batch_actions)
 			
 		log_format = "iteration: {}, loss: {:.4f}, avg reward: {:4f}, action counts: {}"
-		print(log_format.format(i, loss, np.mean(rewards), np.bincount(batch_actions.astype(np.uint8))))
+		#print(log_format.format(i, loss, np.mean(rewards), np.bincount(batch_actions.astype(np.uint8))))
 
 # ROM_PATH = r"../res/Mario Kart 64 (U) [!].z64"
 

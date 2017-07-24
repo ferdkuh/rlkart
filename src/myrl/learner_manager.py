@@ -1,6 +1,7 @@
 import multiprocessing as mp
 import numpy as np
 import sys
+import numpy as np
 
 from myrl.shared_variables import SharedVariables
 from myrl.learner_process import LearnerProcess

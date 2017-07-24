@@ -17,14 +17,16 @@ class LearnerProcess(mp.Process):
 
 	def run(self):
 		self.shared_memory.setup_np_wrappers()
-		self.environment.start()
+		# rand = np.random.randint(9)
+		self.environment.start(self.index)
 		#self.is_ready_barrier.wait()
 		#self.shared_memory.states[self.index] = self.environment.get_current_state()
 		while True:
 			msg = self.queue.get()
 			#logging.debug("[{}] received message: {}".format(self.index, msg))
 			if msg == "new_episode":
-				self.environment.new_episode()
+				# rand = np.random.randint(9)
+				self.environment.new_episode(self.index)
 				#hack: step one frame so the buffer updates?
 				self.environment.step()
 				self.shared_memory.states[self.index] = self.environment.get_current_state()
@@ -44,4 +46,3 @@ class LearnerProcess(mp.Process):
 	def apply_next_action(self):
 		action_index = self.shared_memory.action_indices[self.index]		
 		self.environment.apply_action(action_index)
-		

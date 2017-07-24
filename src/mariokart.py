@@ -10,14 +10,14 @@ class MarioKartEnv():
 
 	AVAILABLE_ACTIONS = [
 		[],							#0					
-		[ANALOG_LEFT],				#1
-		[ANALOG_RIGHT],				#2
+		# [ANALOG_LEFT],				#1
+		# [ANALOG_RIGHT],				#2
 		[BUTTON_A],					#3
-		[BUTTON_B],					#4
+		# [BUTTON_B],					#4
 		[ANALOG_LEFT, BUTTON_A],	#5
-		[ANALOG_LEFT, BUTTON_B],	#6
+		# [ANALOG_LEFT, BUTTON_B],	#6
 		[ANALOG_RIGHT, BUTTON_A],	#7
-		[ANALOG_RIGHT, BUTTON_B]	#8
+		# [ANALOG_RIGHT, BUTTON_B]	#8
 	]
 
 	def __init__(self, rom_path, instance_id):
@@ -27,13 +27,13 @@ class MarioKartEnv():
 		#self.lock = lock		
 		#self.reward_func = reward_func
 
-	def start(self):
+	def start(self, index):
 		#t.core.state_load(r"luigi_raceway_mario.state")
 		self.n64 = N64GameThread(self.rom_path, instance_id=self.instance_id)		
 		self.init()
 		#print("init done")
 		#self.lock.wait()
-		self.new_episode()	
+		self.new_episode(index)
 
 	def init(self):
 		threading.current_thread().name = "Worker_{}".format(self.instance_id)		
@@ -46,7 +46,7 @@ class MarioKartEnv():
 		self.n64.core.pause()	
 
 	# user methods
-	def new_episode(self):		
+	def new_episode(self, index):
 		self.lap = 0
 		self.position = 8
 		self.lap_progress = 0.0
@@ -57,7 +57,8 @@ class MarioKartEnv():
 		self.magic = False
 		self.episode_step = 0
 		#self.n64.core.state_load(r"../res/mid_race.state")
-		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")		
+		save_state = r"../res/save_state" + str(index) + ".st0"
+		self.n64.core.state_load(save_state)
 		#temp test
 		# self.n64.core.resume()
 		# self.n64.core.pause()
@@ -97,7 +98,8 @@ class MarioKartEnv():
 		for i in range(0,n):
 			self.n64.core.advance_frame()
 			mp64core.is_paused.wait()			# this needs to be made less ugly
-			self.episode_step += 1		
+			self.episode_step += 1
+			#print(self.episode_step)
 		
 	def update_status_variables(self):
 		
@@ -127,5 +129,5 @@ class MarioKartEnv():
 			self.race_started = True
 
 		# is the race finished
-		self.race_finished = False
-	
+		if (self.episode_step > 1000): self.race_finished = True
+		else: self.race_finished = False
