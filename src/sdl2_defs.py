@@ -1,0 +1,72 @@
+import ctypes as C
+import numpy as np
+
+# SDL 1.2 keycodes - damn them to hell!
+SDLK_UP = 1073741906
+SDLK_DOWN = 1073741905
+SDLK_RIGHT = 1073741903
+SDLK_LEFT = 1073741904
+SDLK_RETURN = 13
+SDLK_LCTRL = 224
+SDLK_LSHIFT = 225
+SDLK_X = 27
+SDLK_C = 6
+SDLK_Z = 29
+SDLK_W = 26
+SDLK_A = 4
+SDLK_S = 22
+SDLK_D = 7
+
+# key to button mapping
+ANALOG_LEFT = SDLK_LEFT
+ANALOG_RIGHT = SDLK_RIGHT
+ANALOG_UP = SDLK_UP
+ANALOG_DOWN = SDLK_DOWN
+DPAD_LEFT = SDLK_A
+DPAD_RIGHT = SDLK_D
+DPAD_UP = SDLK_W
+DPAD_DOWN = SDLK_S
+TRIGGER_LEFT = SDLK_X
+
+TRIGGER_RIGHT = SDLK_C
+TRIGGER_Z = SDLK_Z
+BUTTON_A = SDLK_LSHIFT
+BUTTON_B = SDLK_LCTRL
+BUTTON_START = SDLK_RETURN
+
+ALL_KEYS = [ANALOG_LEFT, ANALOG_RIGHT, ANALOG_UP, ANALOG_DOWN,
+            DPAD_LEFT, DPAD_RIGHT, DPAD_UP, DPAD_DOWN,
+            TRIGGER_LEFT, TRIGGER_RIGHT, TRIGGER_Z,
+            BUTTON_A, BUTTON_B, BUTTON_START]
+
+# NO_OP			= 0
+# ANALOG_LEFT 	= 1
+# ANALOG_RIGHT 	= 1 << 2
+# ANALOG_UP 		= 1 << 3
+# ANALOG_DOWN 	= 1 << 4
+# DPAD_LEFT 		= 1 << 5
+# DPAD_RIGHT 		= 1 << 6
+# DPAD_UP 		= 1 << 7
+# DPAD_DOWN 		= 1 << 8
+# TRIGGER_LEFT 	= 1 << 9
+# TRIGGER_RIGHT   = 1 << 10
+# TRIGGER_Z       = 1 << 11
+# BUTTON_A 		= 1 << 12
+# BUTTON_B 		= 1 << 13
+# BUTTON_START 	= 1 << 14
+
+# ALL_BUTTONS = [ANALOG_LEFT, ANALOG_RIGHT, ANALOG_UP, ANALOG_DOWN,
+# 			   DPAD_LEFT, DPAD_RIGHT, DPAD_UP, DPAD_DOWN,
+# 			   TRIGGER_LEFT, TRIGGER_RIGHT, TRIGGER_Z,
+# 			   BUTTON_A, BUTTON_B, BUTTON_START]
+
+# input vector layout, values should be 0 or 1
+# this is actually mario kart specific, other game obviously need more buttons
+# INPUT_MAPPING = [ANALOG_LEFT, ANALOG_RIGHT, BUTTON_A, BUTTON_B]
+
+# types for interaction via ctypes
+Framebuffer = C.c_ubyte * (200 * 150 * 3)
+FRAME_CALLBACK_FUNC = C.CFUNCTYPE(None, C.c_uint)
+
+# random shit
+RGB_TO_Y = np.array([0.299, 0.587, 0.144])

@@ -29,15 +29,15 @@ sudo apt-get install mupen64plus libsdl2-dev
 ScreenWidth = 200
 ScreenHeight = 150
 ```
-* Rename the file sdl12_defs.py or sdl2_defs.py to defs.py (depending on your version of sdl), located in /src
-* adjust NUM_LEARNERS in run.py according to the power of your system (default=12), located in /src
+* Rename the file sdl12_defs.py or sdl2_defs.py to defs.py (depending on your version of sdl)
+* adjust NUM_LEARNERS in run.py according to the power of your system (default=12)
 
 ## Usage
 ### Training the net
 
 To train the net run (repeadetly):
 '''
-python -i src/run.py
+python -i run.py
 train_episode()
 '''
 
