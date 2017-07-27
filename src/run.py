@@ -17,7 +17,7 @@ ROM_PATH = r"../res/Mario Kart 64 (U) [!].z64"
 def create_environment(index):
 	return MarioKartEnv(ROM_PATH, index)
 
-NUM_LEARNERS = 1
+NUM_LEARNERS = 12
 STATE_SHAPE = [84, 84]
 BATCH_SIZE = 30
 
