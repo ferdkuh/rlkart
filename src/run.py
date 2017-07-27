@@ -142,7 +142,7 @@ if __name__ == "__main__":
 		print("total episode reward: {:.4f}".format(total_episode_reward))
 		all_episode_rewards.append(total_episode_reward)
 
-	def play(n=100):
+	def gen_frames(n=100):
 		manager.start_new_episode()
 		for i in range(n):
 			current_state = np.copy(manager.shared_memory.states)

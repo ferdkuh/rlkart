@@ -1,6 +1,6 @@
 # Reinforcement Learning on Mario Kart
 
-This project implements an environment for RL algorithms on Mario Kart using the [Mupen64Plus emulator](https://github.com/mupen64plus) and includes a simple implementation of the [PAAC](https://github.com/Alfredvc/paac) algorithm .
+This project implements an environment for RL algorithms on Mario Kart using the [Mupen64Plus emulator](https://github.com/mupen64plus) and includes a simple parallel actor-critique agent heavily based on the [PAAC](https://github.com/Alfredvc/paac) algorithm .
 
 ![example gif](readme_files/example.gif "exampleGif")
 
@@ -48,8 +48,10 @@ Note that the training will always be made with the same savestate and thus on t
 To create a test video without actually learning simply run:
 '''
 python -i run.py
-train()
+gen_frames()
 '''
+
+Note that this function requires the folder frames in the working directory.
 ### Using stored weights
 To use the provided weights simply decomment the line 
 '''
@@ -60,6 +62,8 @@ Note that if you want to restore the weights instead using the terminal you have
 session.run(tf.global_variables_initializer())
 '''
 ## Short theoratical Background
+One problem with using deep learning in RL is that encountered states are often too similar to each other (highly correlated). One possible solution is to execute multiple asynchronous agents in parallel, each interacting with an instance of the environment independently of
+each other as i.e. the [asynchronous advantage actor-critic (A3C)](https://arxiv.org/pdf/1602.01783.pdf) algorithm. The A3C algorithm batches action selection and learning using queues, where actors sample from a shared policy by submitting a task to a predictor, which executes the policy and returns an action once it has accumulated enough tasks. [PAAC](https://arxiv.org/pdf/1705.04862.pdf) is a framework similar to A3C, but it uses only one copy of the parameters, hence parameter updates are performed synchronously, thus avoiding the possible of using an old policy while learning.
 
 ## Discussion and possible improvements of the current state
 * The provided weights were only trained with the current frame instead of the whole history of frames as in the original DQN paper, hence the velocity was probably hard/ impossible to learn (the implementation to use the average of 4 frames is already implemented but decommented)
