@@ -57,7 +57,7 @@ class MarioKartEnv():
 		self.race_finished = False
 		self.magic = False
 		self.episode_step = 0
-		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")	
+		self.n64.core.state_load(r"../res/save_state.st0")	
 
 	def apply_action(self, action_index, frame_skip=1):
 		input_list = MarioKartEnv.AVAILABLE_ACTIONS[action_index]
@@ -71,6 +71,29 @@ class MarioKartEnv():
 		img = img.resize((84, 84))
 		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_Y))
 		return luminance
+
+	'''
+	# includes the overlay of 4 images instead of just using one
+	def get_current_state(self):
+		img = self.n64.get_frame()
+		img = img.resize((84, 84))
+		# img.save("original.tiff") 
+		luminance = np.flipud(np.array(img))
+		luminance = Image.fromarray(luminance).convert('L')
+		# luminance.save("original_gray.tiff") 
+		luminance = np.array(luminance)
+		if self.counterImageSeq < 3:
+			self.imageSeq[self.counterImageSeq] = luminance
+			self.counterImageSeq += 1
+			luminance = sum(np.asarray(self.imageSeq))/ self.counterImageSeq
+		else:
+			for i in range(2):
+				self.imageSeq[i]=self.imageSeq[i+1]
+			self.imageSeq[3] = luminance
+			luminance = sum(np.asarray(self.imageSeq))/ 4
+		# Image.fromarray((luminance * 255 / np.max(luminance)).astype('uint8')).save("test.tiff")   
+		return luminance
+	'''
 
 	# helper methods for reward generation
 	def raw_position(self):
