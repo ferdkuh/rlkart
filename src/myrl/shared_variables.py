@@ -8,13 +8,13 @@ NUMPY_TO_C_DTYPE = {
 	np.uint8: C.c_byte
 }
 
+# converts a numpy array to a numpy array backed by a raw array that can be shared between processes
 def as_shared_array(array):
 	dtype = NUMPY_TO_C_DTYPE[array.dtype.type]
 	shape = array.shape
 	raw_array = mp.RawArray(dtype, array.reshape(-1))
 	return raw_array
 
-# just nice named references to the shared arrays
 class SharedVariables():
 
 	def __init__(self, num_learners, state_shape):

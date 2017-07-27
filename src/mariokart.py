@@ -6,18 +6,19 @@ from n64thread import N64GameThread
 from m64py.core.defs import *
 from defs import *
 
+# this class represents an emulator instance running mariokart 64
 class MarioKartEnv():
 
 	AVAILABLE_ACTIONS = [
 		[],							#0					
 		[ANALOG_LEFT],				#1
 		[ANALOG_RIGHT],				#2
-		[BUTTON_A],					#3
-		[BUTTON_B],					#4
-		[ANALOG_LEFT, BUTTON_A],	#5
-		[ANALOG_LEFT, BUTTON_B],	#6
-		[ANALOG_RIGHT, BUTTON_A],	#7
-		[ANALOG_RIGHT, BUTTON_B]	#8
+		[BUTTON_A]#,					#3
+		# [BUTTON_B],					#4
+		# [ANALOG_LEFT, BUTTON_A],	#5
+		# [ANALOG_LEFT, BUTTON_B],	#6
+		# [ANALOG_RIGHT, BUTTON_A],	#7
+		# [ANALOG_RIGHT, BUTTON_B]	#8
 	]
 
 	def __init__(self, rom_path, instance_id):
@@ -56,19 +57,13 @@ class MarioKartEnv():
 		self.race_finished = False
 		self.magic = False
 		self.episode_step = 0
-		#self.n64.core.state_load(r"../res/mid_race.state")
-		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")		
-		#temp test
-		# self.n64.core.resume()
-		# self.n64.core.pause()
+		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")	
 
 	def apply_action(self, action_index, frame_skip=1):
 		input_list = MarioKartEnv.AVAILABLE_ACTIONS[action_index]
 		self.n64.set_input_state(input_list)
 		self.step(frame_skip)
 		self.update_status_variables()
-		#reward = self.reward_func(self)
-		return 0.0
 
 	def get_current_state(self):
 		img = self.n64.get_frame()
@@ -119,14 +114,6 @@ class MarioKartEnv():
 			delta = max(0.0, delta - 1.0)
 		self.progress_delta = delta
 		self.last_lap_progress = current_progress
-		#god is this wrong
-		# if self.last_lap_progress > current_progress:
-		# 	current_progress += 1.0
-
-		# self.progress_delta = current_progress - self.last_lap_progress
-		# self.last_lap_progress = current_progress
-		# self.progress_delta = self.lap_progress - self.last_lap_progress
-		# self.last_lap_progress = self.lap_progress
 
 		# has the race started yet
 		if not self.race_started and self.raw_lap_progress() > 0.0:
