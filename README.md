@@ -11,9 +11,9 @@ A lot of code was taken directly from the [M64Py](https://github.com/mupen64plus
 ### Prerequisites
 
 Requirements:
-* Python 3.4+ (32bit version in Windows, 64bit version on Linux)
+* Python 3.4+ 64bit
 * TensorFlow 1.0+
-* mupen64plus
+* mupen64plus, compiled with the debugging extensions enabled
 * SDL1.2 or SDL2
 
 example on Ubuntu:
@@ -37,7 +37,7 @@ ScreenHeight = 150
 ## Usage
 ### Training the net
 
-To train the net run (repeadetly):
+To train the net run (repeatedly):
 ```
 python -i run.py
 train_episode()
@@ -61,7 +61,7 @@ Note that if you want to restore the weights instead using the terminal you have
 ```
 session.run(tf.global_variables_initializer())
 ```
-## Short theoratical Background
+## Short theoretical Background
 One problem with using deep learning in RL is that encountered states are often too similar to each other (highly correlated). One possible solution is to execute multiple asynchronous agents in parallel, each interacting with an instance of the environment independently of
 each other as i.e. the [asynchronous advantage actor-critic (A3C)](https://arxiv.org/pdf/1602.01783.pdf) algorithm. The A3C algorithm batches action selection and learning using queues, where actors sample from a shared policy by submitting a task to a predictor, which executes the policy and returns an action once it has accumulated enough tasks. [PAAC](https://arxiv.org/pdf/1705.04862.pdf) is a framework similar to A3C, but it uses only one copy of the parameters, hence parameter updates are performed synchronously, thus avoiding the possible of using an old policy while learning.
 
