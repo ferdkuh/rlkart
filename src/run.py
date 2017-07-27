@@ -41,21 +41,22 @@ if __name__ == "__main__":
 
 	# try to handle ctrl-c gracefully
 	signal.signal(signal.SIGINT, signal_handler)
+	session = tf.InteractiveSession()	
 
 	manager = LearnerProcessManager(NUM_LEARNERS, create_environment)
 	network = Network(num_actions = 4, state_shape = STATE_SHAPE)
-
-	session = tf.InteractiveSession()
+	
 	saver = tf.train.Saver()
+	
 
 	# settings for the optimizer and gradient clipping are as in https://github.com/Alfredvc/paac/
 	optimizer = tf.train.RMSPropOptimizer(0.0224, decay=0.99, epsilon=0.1)
 	gradients, variables = zip(*optimizer.compute_gradients(network.loss))
 	gradients, _ = tf.clip_by_global_norm(gradients, 3.0)
-	minimize_op = optimizer.apply_gradients(zip(gradients, variables))
+	minimize_op = optimizer.apply_gradients(zip(gradients, variables))	
 
 	session.run(tf.global_variables_initializer())
-	# saver.restore(session, "checkpoints/last.ckpt")
+	saver.restore(session, "checkpoints/380-it.ckpt")
 
 	manager.start_learners()
 
@@ -76,7 +77,7 @@ if __name__ == "__main__":
 
 	# train for one epsiode with num_iterations steps
 	def train_episode(num_iterations=100):
-
+		manager.start_new_episode()
 		total_episode_reward = 0.0
 		for i in range(num_iterations):
 
@@ -142,11 +143,11 @@ if __name__ == "__main__":
 		all_episode_rewards.append(total_episode_reward)
 
 	def play(n=100):
-		frames = np.zeros([n, NUM_LEARNERS] + STATE_SHAPE)
+		manager.start_new_episode()
 		for i in range(n):
+			current_state = np.copy(manager.shared_memory.states)
 			ops = [network.policy_out]
 			feed_dict = { network.states: current_state }
-			policy_out = session.run(ops, feed_dict)
+			policy_out = session.run(ops, feed_dict)[0]
 			action_indices = sample_action_from_policy(policy_out)
-			manager.update_learners(action_indices)
-			# frames[i] = np.copy(manager.shared_memory.states)
+			manager.update_learners(action_indices, action="generate_frame")

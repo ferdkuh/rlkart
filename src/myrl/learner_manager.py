@@ -37,9 +37,9 @@ class LearnerProcessManager():
 	# this method updates all environments with the given action indices
 	# and then blocks until all envs have written the new state and reward
 	# to the shared memory
-	def update_learners(self, action_indices):
+	def update_learners(self, action_indices, action="update"):
 		self.shared_memory.action_indices[:] = action_indices
-		for q in self.queues: q.put("update")
+		for q in self.queues: q.put(action)
 		self.is_ready_barrier.wait()
 
 	# helper function that spawns a new learner process with the given index

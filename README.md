@@ -4,6 +4,8 @@ This project implements an environment for RL algorithms on Mario Kart using the
 
 ![example gif](readme_files/example.gif "exampleGif")
 
+A lot of code was taken directly from the [M64Py](https://github.com/mupen64plus/mupen64plus-ui-python) project.
+
 ## Getting Started
 
 ### Prerequisites
@@ -29,21 +31,34 @@ sudo apt-get install mupen64plus libsdl2-dev
 ScreenWidth = 200
 ScreenHeight = 150
 ```
-* Rename the file sdl12_defs.py or sdl2_defs.py to defs.py (depending on your version of sdl), located in /src
-* adjust NUM_LEARNERS in run.py according to the power of your system (default=12), located in /src
+* Rename the file sdl12_defs.py or sdl2_defs.py to defs.py (depending on your version of sdl)
+* adjust NUM_LEARNERS in run.py according to the power of your system (default=12)
 
 ## Usage
 ### Training the net
 
 To train the net run (repeadetly):
 '''
-python -i src/run.py
+python -i run.py
 train_episode()
 '''
 
 Note that the training will always be made with the same savestate and thus on the same track!
+### Create a video/ generate frames
+To create a test video without actually learning simply run:
+'''
+python -i run.py
+train()
+'''
 ### Using stored weights
-
+To use the provided weights simply decomment the line 
+'''
+saver.restore(session, "checkpoints/380-it.ckpt")
+'''
+Note that if you want to restore the weights instead using the terminal you have to initialize the variables first
+'''
+session.run(tf.global_variables_initializer())
+'''
 ## Short theoratical Background
 
 ## Discussion and possible improvements of the current state
@@ -54,4 +69,9 @@ Note that the training will always be made with the same savestate and thus on t
 * The total reward per trainings iteration did increase relatively linear and was still rising when the training was stopped, the graph was taken at 380 trainingsiteration of 100 steps:
 ![totalRewardGraph jpeg](readme_files/totalRewardGraph.jpeg "totalRewardGraph")
 * The training currently always begins at the same time and stops for all agents after a certain stepsize, thus the situations are always relatively similar. The training might be more useful using several different savestates or somethign similar.
+
+## Known Bug and Workaround
+Sometimes the emulator fails to start in the right size 200x150 and instead starts in 640x480, which leads to a crash.
+Simply set the 'mupen64plus.config' to the right screenwidht and screensize again and restart the emulator, alternatively you can use the provided backup.
+
 
