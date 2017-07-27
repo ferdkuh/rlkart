@@ -4,6 +4,8 @@ This project implements an environment for RL algorithms on Mario Kart using the
 
 ![example gif](readme_files/example.gif "exampleGif")
 
+A lot of code was taken directly from the [M64Py](https://github.com/mupen64plus/mupen64plus-ui-python) project.
+
 ## Getting Started
 
 ### Prerequisites
