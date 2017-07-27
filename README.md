@@ -25,7 +25,7 @@ sudo apt-get install mupen64plus libsdl2-dev
 
 * plugin_paths.py needs to be adjusted according the the respective system (the easiest way to find the correct paths is using [m64py](http://m64py.sourceforge.net/))
 * check if the path to the savefile in 'mariokart.py' is 'save'state.st0' if you are running it on Linux or 'luigi_raceway_mario.state' if you are running it on Windows
-* The mupen64plus.config (in Linux: /home/usr/.config/mupen64plus) needs to be adjusted and set to:
+* The mupen64plus.config (in Linux: /home/usr/.config/mupen64plus, windows: %APPDATA%/roaming/mupen64plus) needs to be adjusted and set to:
 
 ```
 ScreenWidth = 200
