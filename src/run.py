@@ -17,8 +17,8 @@ ROM_PATH = r"../res/Mario Kart 64 (U) [!].z64"
 def create_environment(index):
 	return MarioKartEnv(ROM_PATH, index)
 
-NUM_LEARNERS = 12
-STATE_SHAPE = [84, 84]
+NUM_LEARNERS = 15
+STATE_SHAPE = [84, 84, 4]
 BATCH_SIZE = 30
 
 GAMMA = 0.99
@@ -44,19 +44,17 @@ if __name__ == "__main__":
 	session = tf.InteractiveSession()	
 
 	manager = LearnerProcessManager(NUM_LEARNERS, create_environment)
-	network = Network(num_actions = 4, state_shape = STATE_SHAPE)
+	network = Network(num_actions = 6, state_shape = STATE_SHAPE)
 	
-	saver = tf.train.Saver()
-	
-
 	# settings for the optimizer and gradient clipping are as in https://github.com/Alfredvc/paac/
 	optimizer = tf.train.RMSPropOptimizer(0.0224, decay=0.99, epsilon=0.1)
 	gradients, variables = zip(*optimizer.compute_gradients(network.loss))
 	gradients, _ = tf.clip_by_global_norm(gradients, 3.0)
 	minimize_op = optimizer.apply_gradients(zip(gradients, variables))	
 
-	session.run(tf.global_variables_initializer())
-	saver.restore(session, "checkpoints/380-it.ckpt")
+	saver = tf.train.Saver()
+	#session.run(tf.global_variables_initializer())
+	saver.restore(session, "checkpoints/master.ckpt")
 
 	manager.start_learners()
 

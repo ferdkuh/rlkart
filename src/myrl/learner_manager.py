@@ -17,7 +17,8 @@ class LearnerProcessManager():
 		self.create_environment_func = create_environment_func
 		self.is_ready_barrier = mp.Barrier(num_learners+1)
 		self.queues = [mp.Queue() for i in range(0, num_learners)]
-		self.shared_memory = SharedVariables(num_learners, [84, 84])
+		#TODO remove the hard-coded state shape here
+		self.shared_memory = SharedVariables(num_learners, [84, 84, 4])
 		self.shared_memory.setup_np_wrappers()
 		self.learners = [self.create_learner(i) for i in range(0, num_learners)]
 

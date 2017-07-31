@@ -35,7 +35,7 @@ class LearnerProcess(mp.Process):
 				self.shared_memory.states[self.index] = self.environment.get_current_state()
 				self.is_ready_barrier.wait()				
 			elif msg == "update":
-				self.apply_next_action()
+				self.apply_next_action(frame_skip=4)
 				# get current state and reward and copy both to shared memory
 				new_state = self.environment.get_current_state()
 				reward = self.environment.progress_delta * 10.0
@@ -51,7 +51,7 @@ class LearnerProcess(mp.Process):
 					frame.save("frames/learner_{}_{:05d}.png".format(self.index, frame_counter))
 				
 				new_state = self.environment.get_current_state()
-				reward = self.environment.progress_delta * 10.0
+				reward = self.environment.progress_delta * 100.0
 				self.shared_memory.rewards[self.index] = reward
 				self.shared_memory.states[self.index] = new_state
 									

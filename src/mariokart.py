@@ -1,6 +1,7 @@
 import time
 import threading
 import m64py.core.core as mp64core
+import numpy as np
 
 from n64thread import N64GameThread
 from m64py.core.defs import *
@@ -13,27 +14,22 @@ class MarioKartEnv():
 		[],							#0					
 		[ANALOG_LEFT],				#1
 		[ANALOG_RIGHT],				#2
-		[BUTTON_A]#,					#3
+		[BUTTON_A],					#3
 		# [BUTTON_B],					#4
-		# [ANALOG_LEFT, BUTTON_A],	#5
-		# [ANALOG_LEFT, BUTTON_B],	#6
-		# [ANALOG_RIGHT, BUTTON_A],	#7
+		[ANALOG_LEFT, BUTTON_A],	#5
+		#[ANALOG_LEFT, BUTTON_B]#,	#6
+		[ANALOG_RIGHT, BUTTON_A]#,	#7
 		# [ANALOG_RIGHT, BUTTON_B]	#8
 	]
 
 	def __init__(self, rom_path, instance_id):
 		self.instance_id = instance_id
 		self.rom_path = rom_path
-		#self.n64 = N64GameThread(rom_path, instance_id=instance_id)
-		#self.lock = lock		
-		#self.reward_func = reward_func
+		self.state_history = np.zeros([84, 84, 4])
 
 	def start(self):
-		#t.core.state_load(r"luigi_raceway_mario.state")
 		self.n64 = N64GameThread(self.rom_path, instance_id=self.instance_id)		
 		self.init()
-		#print("init done")
-		#self.lock.wait()
 		self.new_episode()	
 
 	def init(self):
@@ -57,7 +53,7 @@ class MarioKartEnv():
 		self.race_finished = False
 		self.magic = False
 		self.episode_step = 0
-		self.n64.core.state_load(r"../res/save_state.st0")	
+		self.n64.core.state_load(r"../res/luigi_raceway_mario.state")	
 
 	def apply_action(self, action_index, frame_skip=1):
 		input_list = MarioKartEnv.AVAILABLE_ACTIONS[action_index]
@@ -66,11 +62,21 @@ class MarioKartEnv():
 		self.update_status_variables()
 
 	def get_current_state(self):
+		#TODO should move this to apply_action so you don't have to take care to call get_current_state appropriately
 		img = self.n64.get_frame()
 		# scale down?
 		img = img.resize((84, 84))
 		luminance = np.flipud((np.array(img) / 255.0).dot(RGB_TO_Y))
-		return luminance
+
+		self.state_history = np.roll(self.state_history, 1, axis = 2)
+		self.state_history[:,:,0] = luminance
+
+		# if there aren't 4 real frames, copy the first one a couple of times
+		for i in range(self.episode_step+1, 1):
+			self.state_history[:,:,i] = self.state_history[:,:,0]
+
+		return self.state_history
+		# return np.expand_dims(luminance, axis=-1)
 
 	'''
 	# includes the overlay of 4 images instead of just using one
@@ -94,6 +100,11 @@ class MarioKartEnv():
 		# Image.fromarray((luminance * 255 / np.max(luminance)).astype('uint8')).save("test.tiff")   
 		return luminance
 	'''
+
+	#more nemu64 space adrresses
+	# 10456A24, 10456BBC both seem to contain speed in [0, 4.83]
+	# 104ECFE4 seems also related but [0, 57]
+	# all are 32bit float
 
 	# helper methods for reward generation
 	def raw_position(self):

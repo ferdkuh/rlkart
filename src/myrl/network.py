@@ -23,7 +23,8 @@ class Network():
 	def __init__(self, num_actions, state_shape):
 
 		self.states = tf.placeholder(tf.float32, shape = [None] + state_shape, name='input_states')
-		inputs = tf.expand_dims(self.states, axis=-1)
+		#inputs = tf.expand_dims(self.states, axis=-1)
+		inputs = self.states
 
 		# basic conv net, as described in nature DQN paper, but just for fun with SELU units
 		self.conv1 = conv2d(
@@ -39,7 +40,7 @@ class Network():
 		self.conv3 = conv2d(
 			self.conv2, num_outputs = 64, 
 			kernel_size = 3, stride = 1,
-			 activation_fn = selu, padding='same')
+			activation_fn = selu, padding='same')
 
 		conv3_flat = flatten(self.conv3)
 
@@ -89,6 +90,9 @@ class Network():
 		critic_loss_mean = tf.reduce_mean(tf.scalar_mul(0.25, tf.pow(critic_loss, 2)), name='mean_critic_loss')
 		loss = tf.scalar_mul(tf.constant(5.0), actor_objective_mean + critic_loss_mean)
 		
+		self.debug1 = actor_objective_advantage_term
+		self.debug2 = actor_objective_entropy_term
+
 		self.entropy = output_layer_entropy
 		self.policy_loss = actor_objective_mean
 		self.value_loss = critic_loss_mean
